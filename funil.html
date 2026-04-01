@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVC · Funil de Vendas</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1A2B6D;--azul2:#0f1d52;--azul3:#0a1338;
+  --amar:#FFD700;--amar2:#FFC000;--amar3:#FFE566;
+  --verde:#00d48a;--verm:#ff4466;--roxo:#a78bfa;--lara:#ff9f43;
+  --bg:#0c1230;--card:#111a3e;--card2:#172048;
+  --brd:rgba(255,215,0,.10);--brd2:rgba(255,215,0,.22);
+  --txt:#eef0ff;--muted:#6878b0;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--txt);height:100vh;overflow:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 15% 0%,rgba(26,43,109,.5) 0%,transparent 60%),radial-gradient(ellipse 40% 30% at 85% 100%,rgba(255,215,0,.05) 0%,transparent 50%);pointer-events:none;z-index:0;}
+
+/* ===== TELAS ===== */
+.sc{display:none;height:100vh;flex-direction:column;position:relative;z-index:1;}
+.sc.on{display:flex;}
+
+/* ===== LOGIN ===== */
+#sc-login{align-items:center;justify-content:center;padding:20px;}
+.login-wrap{width:100%;max-width:360px;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo-badge{display:inline-flex;border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.llb-a{background:var(--amar);color:var(--azul2);font-weight:900;font-size:22px;padding:8px 16px;letter-spacing:3px;}
+.llb-b{background:var(--azul3);color:var(--amar);font-weight:700;font-size:11px;padding:8px 12px;border:1px solid var(--amar2);border-left:none;letter-spacing:1px;display:flex;align-items:center;}
+.login-subtitle{font-size:11px;color:var(--muted);letter-spacing:.5px;}
+.login-card{background:var(--card);border:1px solid var(--brd2);border-radius:16px;padding:26px;border-top:3px solid var(--amar);}
+.login-card h2{font-size:16px;font-weight:800;margin-bottom:18px;text-align:center;}
+.lf{margin-bottom:13px;}
+.lf label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
+.lf select,.lf input{width:100%;padding:10px 13px;background:var(--bg);border:1px solid var(--brd2);border-radius:9px;color:var(--txt);font-size:14px;font-family:var(--font);outline:none;-webkit-appearance:none;transition:border-color .15s;}
+.lf select:focus,.lf input:focus{border-color:var(--amar);}
+.lf select option{background:#172048;}
+.btn-login{width:100%;padding:12px;background:var(--amar);border:none;border-radius:9px;color:var(--azul2);font-size:15px;font-weight:800;font-family:var(--font);cursor:pointer;transition:all .2s;margin-top:4px;}
+.btn-login:hover{background:var(--amar3);transform:translateY(-1px);}
+.login-err{color:var(--verm);font-size:11px;text-align:center;margin-top:8px;min-height:16px;}
+.login-hint{font-size:10px;color:var(--muted);text-align:center;margin-top:10px;}
+.login-hint strong{color:var(--amar2);}
+
+/* ===== TOPBAR ===== */
+.top{height:52px;background:var(--azul2);border-bottom:2px solid var(--amar2);display:flex;align-items:center;padding:0 14px;gap:10px;flex-shrink:0;z-index:10;position:relative;}
+.logo-wrap{display:flex;}
+.logo-a{background:var(--amar);color:var(--azul2);font-weight:900;font-size:14px;padding:4px 10px;border-radius:5px 0 0 5px;letter-spacing:2px;}
+.logo-b{background:var(--azul3);color:var(--amar);font-weight:700;font-size:9px;padding:4px 8px;border-radius:0 5px 5px 0;border:1px solid var(--amar2);border-left:none;letter-spacing:1px;display:flex;align-items:center;}
+.top-info{flex:1;display:flex;flex-direction:column;gap:1px;}
+.top-title{font-size:13px;font-weight:700;}
+.top-title em{color:var(--amar);font-style:normal;}
+.top-sub{font-size:9px;color:var(--muted);}
+.top-right{display:flex;align-items:center;gap:8px;}
+.top-mes{font-family:var(--mono);font-size:10px;color:var(--amar2);background:rgba(255,215,0,.08);border:1px solid var(--brd2);padding:3px 9px;border-radius:20px;}
+.role-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;}
+.role-v{background:rgba(0,212,138,.15);color:var(--verde);}
+.role-s{background:rgba(255,215,0,.15);color:var(--amar);}
+.role-a{background:rgba(167,139,250,.15);color:var(--roxo);}
+.btn-sm{padding:4px 10px;background:transparent;border:1px solid var(--brd2);border-radius:6px;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s;}
+.btn-sm:hover{color:var(--txt);border-color:var(--txt);}
+.panel-btn{background:rgba(255,215,0,.1);border:1px solid var(--brd2);color:var(--amar);border-radius:7px;padding:5px 11px;font-size:10px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .15s;}
+.panel-btn:hover{background:rgba(255,215,0,.2);}
+
+/* ===== ABAS ===== */
+.tabs{background:var(--azul2);border-bottom:1px solid var(--brd);padding:0 14px;display:flex;gap:2px;flex-shrink:0;z-index:10;position:relative;overflow-x:auto;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:8px 12px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;transition:all .15s;font-family:var(--font);white-space:nowrap;}
+.tab.on{color:var(--amar);border-bottom-color:var(--amar);}
+.tab:hover:not(.on){color:var(--txt);}
+
+/* ===== LAYOUT BODY ===== */
+.app-body{display:flex;flex:1;overflow:hidden;position:relative;z-index:1;}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:272px;background:var(--card);border-right:1px solid var(--brd);display:flex;flex-direction:column;flex-shrink:0;transition:width .25s,opacity .2s;overflow:hidden;}
+.sidebar.closed{width:0;opacity:0;}
+.sb-inner{width:272px;padding:12px;display:flex;flex-direction:column;gap:9px;overflow-y:auto;height:100%;}
+.sb-block{background:var(--card2);border:1px solid var(--brd);border-radius:9px;padding:10px;}
+.sb-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--amar2);margin-bottom:7px;}
+
+/* KPIs */
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.kpi{background:var(--card2);border:1px solid var(--brd);border-radius:8px;padding:9px;border-top:2px solid var(--amar2);}
+.kpi-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:2px;}
+.kpi-v{font-size:15px;font-weight:800;font-family:var(--mono);color:var(--amar);}
+.kpi-s{font-size:9px;color:var(--muted);margin-top:1px;}
+
+/* COMISSÃO */
+.com-panel{background:var(--card2);border:1px solid var(--brd);border-radius:9px;overflow:hidden;}
+.com-panel-hdr{background:var(--azul2);padding:7px 10px;border-bottom:1px solid var(--brd);}
+.com-panel-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--amar2);}
+.com-conf{padding:9px 10px;border-bottom:1px solid var(--brd);}
+.com-est{padding:9px 10px;border-bottom:1px solid var(--brd);background:rgba(255,215,0,.02);}
+.com-subir{padding:9px 10px;background:rgba(167,139,250,.03);}
+.com-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.com-lbl{font-size:10px;color:var(--muted);}
+.com-val{font-family:var(--mono);font-size:12px;font-weight:700;}
+.com-tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:3px;}
+.com-est-badge{font-size:8px;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.25);color:var(--amar2);padding:1px 6px;border-radius:10px;margin-left:3px;}
+.barra-bg{background:rgba(255,255,255,.06);border-radius:100px;height:5px;overflow:hidden;margin:5px 0;}
+.barra-fill{height:5px;border-radius:100px;transition:width .8s;}
+.barra-lbl{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:2px;}
+.com-subir-title{font-size:9px;font-weight:700;color:var(--roxo);margin-bottom:5px;}
+.com-subir-row{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:2px;}
+.com-subir-val{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--txt);}
+.com-retro{margin-top:5px;background:rgba(0,212,138,.07);border:1px solid rgba(0,212,138,.15);border-radius:6px;padding:5px 7px;font-size:9px;color:var(--verde);line-height:1.4;}
+
+/* RANKING */
+.rank-row{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid var(--brd);}
+.rank-row:last-child{border:none;}
+.rank-medal{font-size:11px;width:16px;}
+.rank-av{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;}
+.rank-name{flex:1;font-size:10px;font-weight:600;}
+.rank-gmv{font-size:9px;font-family:var(--mono);color:var(--amar);}
+.rank-me{font-size:8px;color:var(--amar2);background:rgba(255,215,0,.1);padding:1px 5px;border-radius:8px;}
+
+/* MAYA */
+.maya-block{background:var(--card2);border:1px solid rgba(167,139,250,.2);border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:6px;flex:1;min-height:0;}
+.maya-hdr{display:flex;align-items:center;gap:7px;}
+.maya-av{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--azul),var(--amar2));display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.maya-name{font-size:11px;font-weight:800;color:var(--amar);}
+.maya-role{font-size:8px;color:var(--muted);}
+.maya-status{margin-left:auto;display:flex;align-items:center;gap:4px;font-size:9px;color:var(--verde);}
+.maya-dot{width:5px;height:5px;border-radius:50%;background:var(--verde);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.maya-chips{display:flex;flex-wrap:wrap;gap:3px;}
+.chip{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.15);border-radius:20px;padding:2px 7px;font-size:9px;color:var(--amar2);cursor:pointer;transition:all .12s;font-family:var(--font);}
+.chip:hover{background:rgba(255,215,0,.18);}
+.maya-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;min-height:60px;max-height:150px;}
+.mmsg{border-radius:7px;padding:6px 8px;font-size:10px;line-height:1.45;}
+.mmsg.ai{background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.15);}
+.mmsg.user{background:rgba(26,43,109,.4);border:1px solid rgba(26,43,109,.7);align-self:flex-end;max-width:90%;}
+.mmsg.load{color:var(--muted);font-style:italic;}
+.mmsg strong{color:var(--amar2);}
+.maya-inp-row{display:flex;gap:5px;}
+.maya-inp{flex:1;background:var(--bg);border:1px solid var(--brd2);border-radius:6px;padding:5px 8px;font-size:10px;color:var(--txt);font-family:var(--font);outline:none;}
+.maya-inp:focus{border-color:var(--amar);}
+.maya-send{background:var(--amar);color:var(--azul2);border:none;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:900;cursor:pointer;}
+.maya-send:disabled{background:var(--muted);cursor:not-allowed;}
+
+/* ===== FUNIL ===== */
+.funil-main{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:11px;gap:8px;}
+.alerts{display:flex;gap:6px;flex-shrink:0;overflow-x:auto;padding-bottom:2px;}
+.ap{border-radius:20px;padding:4px 11px;font-size:10px;font-weight:600;white-space:nowrap;flex-shrink:0;border:1px solid;}
+.ap.urg{border-color:rgba(255,68,102,.4);color:var(--verm);background:rgba(255,68,102,.07);}
+.ap.hot{border-color:rgba(255,215,0,.35);color:var(--amar);background:rgba(255,215,0,.06);}
+.ap.ok{border-color:rgba(0,212,138,.35);color:var(--verde);background:rgba(0,212,138,.06);}
+.ap.info{border-color:rgba(167,139,250,.35);color:var(--roxo);background:rgba(167,139,250,.06);}
+
+/* KANBAN */
+.kanban{display:flex;gap:9px;flex:1;overflow-x:auto;overflow-y:hidden;}
+.kcol{flex:0 0 200px;display:flex;flex-direction:column;min-height:0;}
+.kcol-hd{border-radius:8px 8px 0 0;padding:7px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.kcol-name{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;}
+.kcol-cnt{font-size:11px;font-weight:900;font-family:var(--mono);}
+.kcol-bd{flex:1;background:rgba(255,255,255,.02);border:1px solid var(--brd);border-top:none;border-radius:0 0 8px 8px;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:6px;}
+.kcol-empty{text-align:center;font-size:10px;color:var(--muted);padding:18px 0;}
+.kcol-tot{font-size:9px;color:var(--muted);text-align:right;padding-top:4px;border-top:1px solid var(--brd);font-family:var(--mono);}
+
+/* LEAD CARD */
+.lcard{background:var(--card2);border:1px solid var(--brd);border-radius:8px;padding:9px 10px;transition:all .15s;position:relative;overflow:hidden;}
+.lcard::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--lc,var(--muted));}
+.lcard:hover{border-color:var(--amar2);box-shadow:0 3px 14px rgba(255,215,0,.08);}
+.lcard.urgente{border-color:rgba(255,68,102,.35);}
+.lcard.urgente::before{background:var(--verm);}
+.lcard.fechado::before{background:var(--verde);}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px;}
+.lc-nome{font-size:12px;font-weight:700;line-height:1.2;}
+.lc-ico{font-size:12px;}
+.lc-dest{font-size:9px;color:var(--muted);margin-bottom:5px;}
+.lc-mid{display:flex;justify-content:space-between;align-items:center;gap:4px;}
+.lc-gmv{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--amar);}
+.lc-age{font-size:9px;font-family:var(--mono);color:var(--muted);}
+.lc-age.w{color:var(--verm);font-weight:700;}
+.lc-agent{font-size:9px;background:rgba(255,255,255,.05);padding:1px 5px;border-radius:8px;color:var(--muted);}
+.lc-regua{margin-top:7px;background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.12);border-radius:6px;padding:6px 8px;}
+.lc-regua-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.lc-regua-lbl{font-size:9px;color:var(--amar2);font-weight:700;}
+.lc-regua-pct{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--amar);}
+input.regua-slider{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,215,0,.2);border-radius:2px;outline:none;cursor:pointer;}
+input.regua-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--amar);border:2px solid var(--azul2);cursor:pointer;}
+.lc-regua-nums{display:flex;justify-content:space-between;margin-top:3px;font-size:8px;color:var(--muted);}
+.lc-est-row{display:flex;justify-content:space-between;align-items:center;margin-top:5px;padding-top:5px;border-top:1px solid rgba(255,215,0,.1);}
+.lc-est-lbl{font-size:9px;color:var(--muted);}
+.lc-est-val{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--amar2);}
+.lc-est-com{font-size:9px;color:var(--roxo);font-family:var(--mono);}
+.lc-real{margin-top:7px;background:rgba(0,212,138,.05);border:1px solid rgba(0,212,138,.15);border-radius:6px;padding:6px 8px;}
+.lc-real-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
+.lc-real-lbl{font-size:9px;color:var(--verde);font-weight:700;}
+.lc-real-lock{font-size:9px;color:var(--verde);}
+.lc-real-row{display:flex;justify-content:space-between;}
+.lc-real-item{text-align:center;}
+.lc-real-item-l{font-size:8px;color:var(--muted);}
+.lc-real-item-v{font-family:var(--mono);font-size:11px;font-weight:700;}
+.lc-tip{margin-top:5px;font-size:9px;color:#c4b5fd;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.12);border-radius:5px;padding:4px 7px;line-height:1.4;cursor:pointer;transition:background .12s;}
+.lc-tip:hover{background:rgba(167,139,250,.14);}
+.lc-actions{display:flex;gap:4px;margin-top:6px;}
+.btn-mv{flex:1;font-size:9px;padding:3px 0;border:1px solid var(--brd2);border-radius:5px;background:none;color:var(--muted);cursor:pointer;transition:all .12s;font-family:var(--font);}
+.btn-mv:hover{border-color:var(--verde);color:var(--verde);}
+.btn-lose{width:22px;border:1px solid rgba(255,68,102,.25);border-radius:5px;background:none;color:var(--verm);cursor:pointer;font-size:10px;}
+
+/* ===== ADMIN VISÃO GERAL ===== */
+.vg-content{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px;}
+.vg-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}
+.vg-stat{background:var(--card2);border:1px solid var(--brd);border-radius:10px;padding:12px;border-top:2px solid var(--amar2);text-align:center;}
+.vg-stat-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;}
+.vg-stat-v{font-size:20px;font-weight:800;font-family:var(--mono);color:var(--amar);}
+.vg-stat-s{font-size:9px;color:var(--muted);margin-top:2px;}
+.ag-card{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:13px;}
+.ag-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ag-av{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;}
+.ag-name{font-size:14px;font-weight:800;}
+.ag-role{font-size:9px;color:var(--muted);}
+.ag-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;}
+.ag-num{background:var(--card2);border-radius:7px;padding:7px;text-align:center;}
+.ag-num-l{font-size:8px;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.ag-num-v{font-size:13px;font-weight:800;font-family:var(--mono);}
+.ag-barra-bg{background:rgba(255,255,255,.06);border-radius:100px;height:5px;overflow:hidden;margin-top:7px;}
+.ag-barra-fill{height:5px;border-radius:100px;background:linear-gradient(90deg,var(--azul),var(--amar));transition:width .8s;}
+
+/* ===== FAB & MODALS ===== */
+.fab{position:fixed;bottom:20px;right:20px;background:var(--amar);color:var(--azul2);border:none;width:48px;height:48px;border-radius:14px;font-size:22px;font-weight:900;cursor:pointer;box-shadow:0 6px 20px rgba(255,215,0,.3);transition:all .2s;z-index:100;display:flex;align-items:center;justify-content:center;}
+.fab:hover{transform:scale(1.1);}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;display:none;align-items:center;justify-content:center;}
+.ov.open{display:flex;}
+.modal{background:var(--card2);border:1px solid var(--brd2);border-radius:14px;padding:22px;width:420px;max-width:95vw;border-top:3px solid var(--amar);}
+.modal h3{font-size:15px;font-weight:800;margin-bottom:14px;color:var(--amar);}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:4px;}
+.fg{margin-bottom:0;}
+.fg label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
+.fg input,.fg select{width:100%;background:var(--bg);border:1px solid var(--brd2);border-radius:7px;padding:8px 10px;font-size:13px;color:var(--txt);font-family:var(--font);outline:none;}
+.fg input:focus,.fg select:focus{border-color:var(--amar);}
+.modal-btns{display:flex;gap:8px;margin-top:14px;}
+.btn-ok{flex:1;background:var(--amar);color:var(--azul2);border:none;border-radius:7px;padding:9px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--font);}
+.btn-cancel{background:none;color:var(--muted);border:1px solid var(--brd2);border-radius:7px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:var(--font);}
+.modal-err{color:var(--verm);font-size:11px;text-align:center;margin-top:6px;min-height:14px;}
+
+/* Maya lead modal */
+.maya-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;}
+.maya-ov.open{display:flex;}
+.maya-panel{background:var(--card2);border:1px solid rgba(255,215,0,.22);border-radius:14px;padding:20px;width:460px;max-width:95vw;max-height:80vh;display:flex;flex-direction:column;gap:10px;border-top:3px solid var(--amar);}
+.maya-panel-hdr{display:flex;align-items:center;justify-content:space-between;}
+.maya-panel-title{font-size:14px;font-weight:800;color:var(--amar);}
+.maya-close{background:none;border:1px solid var(--brd2);color:var(--muted);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:11px;font-family:var(--font);}
+.lead-ctx{background:rgba(26,43,109,.4);border:1px solid var(--brd);border-radius:7px;padding:9px;font-size:10px;color:var(--muted);line-height:1.6;}
+.lead-ctx strong{color:var(--txt);}
+.lead-ctx .ctx-est{color:var(--amar2);}
+.maya-pmgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:7px;}
+.maya-pinp-row{display:flex;gap:6px;}
+.mpi{flex:1;background:var(--bg);border:1px solid var(--brd2);border-radius:7px;padding:8px 10px;font-size:11px;color:var(--txt);font-family:var(--font);outline:none;}
+.mpi:focus{border-color:var(--amar);}
+.mps{background:var(--amar);color:var(--azul2);border:none;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:900;cursor:pointer;}
+.mps:disabled{background:var(--muted);cursor:not-allowed;}
+
+/* Senha modal */
+.modal-senha{width:340px;}
+
+/* Primeiro acesso */
+.primeiro-acesso-ov{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;}
+.primeiro-acesso-ov.open{display:flex;}
+.primeiro-acesso-modal{background:var(--card2);border:1px solid var(--brd2);border-radius:18px;padding:28px;width:380px;max-width:95vw;border-top:4px solid var(--amar);animation:fadeUp .35s ease;}
+.pa-header{text-align:center;margin-bottom:22px;}
+.pa-icon{font-size:36px;margin-bottom:10px;}
+.pa-title{font-size:17px;font-weight:900;color:var(--amar);margin-bottom:5px;}
+.pa-sub{font-size:12px;color:var(--muted);line-height:1.5;}
+.pa-sub strong{color:var(--txt);}
+.pa-aviso{background:rgba(255,159,67,.1);border:1px solid rgba(255,159,67,.25);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--lara);margin-bottom:18px;line-height:1.5;}
+.pa-fg{margin-bottom:12px;}
+.pa-fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
+.pa-fg input{width:100%;padding:10px 13px;background:var(--bg);border:1px solid var(--brd2);border-radius:9px;color:var(--txt);font-size:14px;font-family:var(--font);outline:none;transition:border-color .15s;}
+.pa-fg input:focus{border-color:var(--amar);}
+.pa-strength{height:3px;border-radius:2px;margin-top:5px;transition:all .3s;background:var(--brd);}
+.pa-strength-lbl{font-size:9px;color:var(--muted);margin-top:3px;}
+.pa-err{color:var(--verm);font-size:11px;text-align:center;margin-top:6px;min-height:14px;}
+.btn-pa{width:100%;padding:12px;background:var(--amar);border:none;border-radius:9px;color:var(--azul2);font-size:14px;font-weight:800;font-family:var(--font);cursor:pointer;transition:all .2s;margin-top:4px;}
+.btn-pa:hover{background:var(--amar3);transform:translateY(-1px);}
+.btn-pa:disabled{background:var(--muted);cursor:not-allowed;transform:none;}
+
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--brd2);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- ===== TELA LOGIN ===== -->
+<div class="sc on" id="sc-login">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <div class="login-logo-badge">
+        <div class="llb-a">CVC</div>
+        <div class="llb-b">VIAGENS</div>
+      </div>
+      <div class="login-subtitle">Shopping Sete Lagoas · R&R Turismo Ltda.</div>
+    </div>
+    <div class="login-card">
+      <h2>Quem está acessando?</h2>
+      <div class="lf">
+        <label>Selecione seu nome</label>
+        <select id="l-sel"><option value="">— Escolha —</option></select>
+      </div>
+      <div class="lf">
+        <label>Senha</label>
+        <input type="password" id="l-pass" placeholder="••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="login-err" id="l-err"></div>
+      <button class="btn-login" onclick="doLogin()">Entrar →</button>
+      <div class="login-hint">Senha padrão: <strong>cvc123</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TELA PRINCIPAL (FUNIL) ===== -->
+<div class="sc" id="sc-app">
+  <div class="top">
+    <div class="logo-wrap"><div class="logo-a">CVC</div><div class="logo-b">FUNIL</div></div>
+    <div class="top-info">
+      <div class="top-title">Bem-vindo, <em id="top-nome">—</em></div>
+      <div class="top-sub" id="top-sub">—</div>
+    </div>
+    <div class="top-right">
+      <div class="top-mes">ABRIL 2026</div>
+      <div class="role-badge" id="top-role-badge"></div>
+      <button class="panel-btn" onclick="toggleSB()">⚡ MAYA</button>
+      <button class="btn-sm" onclick="openSenha()">🔒</button>
+      <button class="btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- Abas — montadas dinamicamente por role -->
+  <div class="tabs" id="tabs"></div>
+
+  <!-- Corpo -->
+  <div class="app-body">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sb-inner">
+        <div class="kpi-grid" id="kpi-grid"></div>
+        <div class="com-panel">
+          <div class="com-panel-hdr"><div class="com-panel-title">💰 Comissão do Mês</div></div>
+          <div class="com-conf" id="com-conf"></div>
+          <div class="com-est" id="com-est"></div>
+          <div class="com-subir" id="com-subir"></div>
+        </div>
+        <div class="sb-block" id="ranking-block"></div>
+        <div class="maya-block">
+          <div class="maya-hdr">
+            <div class="maya-av">🤖</div>
+            <div><div class="maya-name">Maya IA</div><div class="maya-role">Especialista em Vendas</div></div>
+            <div class="maya-status"><div class="maya-dot"></div>online</div>
+          </div>
+          <div class="maya-chips" id="chips"></div>
+          <div class="maya-msgs" id="maya-msgs"></div>
+          <div class="maya-inp-row">
+            <input class="maya-inp" id="maya-inp" placeholder="Pergunte à Maya..." onkeydown="if(event.key==='Enter')sendMaya()">
+            <button class="maya-send" id="msend" onclick="sendMaya()">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÁREA DE CONTEÚDO (muda por aba) -->
+    <div id="tab-funil" class="funil-main" style="display:none">
+      <div class="alerts" id="alerts"></div>
+      <div class="kanban" id="kanban"></div>
+    </div>
+
+    <div id="tab-visao" class="vg-content" style="display:none"></div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab-btn" onclick="openModal()" style="display:none">+</button>
+
+<!-- MODAL NOVO LEAD -->
+<div class="ov" id="ov-lead" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h3>+ Novo Lead</h3>
+    <div class="mg">
+      <div class="fg"><label>Cliente</label><input id="f-nome" placeholder="Nome completo"></div>
+      <div class="fg"><label>Destino</label><input id="f-dest" placeholder="Ex: Cancún"></div>
+      <div class="fg"><label>GMV Estimado (R$)</label><input id="f-gmv" type="number" placeholder="10000"></div>
+      <div class="fg"><label>Consultor</label><select id="f-agent"></select></div>
+      <div class="fg"><label>Canal</label>
+        <select id="f-canal"><option>Walk-in</option><option>WhatsApp</option><option>Indicação</option><option>CVC Digital</option></select></div>
+      <div class="fg"><label>Temperatura</label>
+        <select id="f-temp"><option value="hot">🔥 Quente</option><option value="warm">⚡ Morno</option><option value="cold">❄️ Frio</option></select></div>
+    </div>
+    <div class="fg" style="margin-top:9px">
+      <label>Rentabilidade estimada — <span id="f-rent-val" style="color:var(--amar);font-weight:700">9%</span></label>
+      <input type="range" class="regua-slider" id="f-rent" min="8" max="14" value="9" step="0.5" oninput="document.getElementById('f-rent-val').textContent=this.value+'%'">
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--muted);margin-top:2px"><span>8%</span><span>11%</span><span>14%</span></div>
+    </div>
+    <div class="fg" style="margin-top:7px"><label>Observações</label><input id="f-obs" placeholder="Ex: Lua de mel, quer viajar em julho..."></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-ok" onclick="addLead()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRIMEIRO ACESSO -->
+<div class="primeiro-acesso-ov" id="ov-primeiro-acesso">
+  <div class="primeiro-acesso-modal">
+    <div class="pa-header">
+      <div class="pa-icon">🔑</div>
+      <div class="pa-title">Bem-vindo ao CVC Funil!</div>
+      <div class="pa-sub">Olá, <strong id="pa-nome">—</strong>! Este é o seu primeiro acesso.<br>Crie uma senha pessoal para proteger sua conta.</div>
+    </div>
+    <div class="pa-aviso">⚠️ Você ainda está usando a senha padrão <strong>cvc123</strong>. Troque agora para manter sua conta segura.</div>
+    <div class="pa-fg">
+      <label>Nova senha (mínimo 6 caracteres)</label>
+      <input type="password" id="pa-nova" placeholder="Digite sua nova senha" oninput="checkSenhaForce(this.value)">
+      <div class="pa-strength" id="pa-strength"></div>
+      <div class="pa-strength-lbl" id="pa-strength-lbl"></div>
+    </div>
+    <div class="pa-fg">
+      <label>Confirmar nova senha</label>
+      <input type="password" id="pa-conf" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')salvarPrimeiraSenha()">
+    </div>
+    <div class="pa-err" id="pa-err"></div>
+    <button class="btn-pa" id="btn-pa" onclick="salvarPrimeiraSenha()">Criar minha senha →</button>
+  </div>
+</div>
+
+<!-- MODAL SENHA -->
+<div class="ov" id="ov-senha" onclick="if(event.target===this)document.getElementById('ov-senha').classList.remove('open')">
+  <div class="modal modal-senha">
+    <h3>🔒 Trocar Senha</h3>
+    <div class="fg" style="margin-bottom:11px"><label>Senha atual</label><input type="password" id="s-atual" placeholder="••••••"></div>
+    <div class="fg" style="margin-bottom:11px"><label>Nova senha</label><input type="password" id="s-nova" placeholder="••••••"></div>
+    <div class="fg" style="margin-bottom:0"><label>Confirmar</label><input type="password" id="s-conf" placeholder="••••••"></div>
+    <div class="modal-err" id="s-err"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="document.getElementById('ov-senha').classList.remove('open')">Cancelar</button>
+      <button class="btn-ok" onclick="trocarSenha()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAYA LEAD MODAL -->
+<div class="maya-ov" id="maya-ov">
+  <div class="maya-panel">
+    <div class="maya-panel-hdr">
+      <div class="maya-panel-title">🤖 Maya — Análise do Lead</div>
+      <button class="maya-close" onclick="closeMayaModal()">✕ Fechar</button>
+    </div>
+    <div class="lead-ctx" id="lead-ctx"></div>
+    <div class="maya-pmgs" id="maya-pmgs"></div>
+    <div class="maya-pinp-row">
+      <input class="mpi" id="mpi" placeholder="Pergunte sobre este lead, objeções, estratégia..." onkeydown="if(event.key==='Enter')sendMayaPanel()">
+      <button class="mps" id="mps-btn" onclick="sendMayaPanel()">→</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== USUÁRIOS =====
+const USUARIOS_BASE = [
+  {id:'rafael',   name:'Rafael',    role:'admin',       senha:'rafael123'},
+  {id:'yasmin',   name:'Yasmin',    role:'supervisora', senha:'cvc123'},
+  {id:'dennis',   name:'Dennis',    role:'vendedor',    senha:'cvc123'},
+  {id:'viviane',  name:'Viviane',   role:'vendedor',    senha:'cvc123'},
+  {id:'analuiza', name:'Ana Luiza', role:'vendedor',    senha:'cvc123'},
+];
+const ls = (k,v) => {
+  if(v===undefined){try{return JSON.parse(localStorage.getItem('cvcf_'+k))}catch{return null}}
+  localStorage.setItem('cvcf_'+k,JSON.stringify(v));
+};
+const getUsuarios = () => ls('usuarios') || USUARIOS_BASE;
+const setUsuarios = u => ls('usuarios',u);
+
+// ===== METAS =====
+const METAS_BASE = {loja:450000, Yasmin:135000, Dennis:120000, Viviane:120000, 'Ana Luiza':75000};
+const getMeta = name => {
+  const saved = ls('meta_'+name);
+  return saved !== null ? saved : (METAS_BASE[name] || METAS_BASE.loja);
+};
+
+// ===== CONSTANTES =====
+const NIVEIS = [
+  {id:0,label:'Abaixo da Meta',min:0,  pct:5},
+  {id:1,label:'Meta Batida',   min:100,pct:8},
+  {id:2,label:'Meta +30%',     min:130,pct:10},
+  {id:3,label:'Meta +50%',     min:150,pct:12},
+  {id:4,label:'Meta Dobrada',  min:200,pct:14},
+];
+const META_REC_PCT = 12;
+const CORES = {Yasmin:'#FFD700',Dennis:'#4f6fff',Viviane:'#00d48a','Ana Luiza':'#a78bfa',Rafael:'#ff9f43'};
+const CORES_T = {Yasmin:'#1A2B6D',Dennis:'#fff',Viviane:'#0a1338','Ana Luiza':'#fff',Rafael:'#1A2B6D'};
+const STAGES = [
+  {id:'contato',     label:'Contato',    cor:'#4f6fff',bg:'rgba(79,111,255,.12)'},
+  {id:'levantamento',label:'Levantamento',cor:'#a78bfa',bg:'rgba(167,139,250,.12)'},
+  {id:'cotacao',     label:'Cotação',    cor:'#FFD700',bg:'rgba(255,215,0,.10)'},
+  {id:'negociacao',  label:'Negociação', cor:'#ff9f43',bg:'rgba(255,159,67,.12)'},
+  {id:'fechado',     label:'Fechado ✓', cor:'#00d48a',bg:'rgba(0,212,138,.12)'},
+];
+const NEXT = {contato:'levantamento',levantamento:'cotacao',cotacao:'negociacao',negociacao:'fechado'};
+const TEMP = {hot:'🔥',warm:'⚡',cold:'❄️'};
+const TEMP_COR = {hot:'#ff9f43',warm:'#FFD700',cold:'#4f6fff'};
+const NIVEL_COR = ['var(--verm)','var(--lara)','var(--amar)','var(--verde)','#a78bfa'];
+const NIVEL_BG  = ['rgba(255,68,102,.12)','rgba(255,159,67,.12)','rgba(255,215,0,.12)','rgba(0,212,138,.12)','rgba(167,139,250,.15)'];
+
+// ===== ESTADO =====
+let CUR = null, sbOpen = true, activeLead = null, abaAtual = 'funil';
+
+// ===== LEADS =====
+const getLeads = () => ls('leads') || getLeadsDefault();
+const saveLeads = l => ls('leads', l);
+
+function getLeadsDefault() {
+  return [
+    {id:1, nome:'Roberto Alves',   dest:'Cancún',       gmv:12000,rent:9.0, agent:'Yasmin',   canal:'Walk-in',  stage:'negociacao',  temp:'hot', obs:'Casal, lua de mel.',          created:Date.now()-172800000},
+    {id:2, nome:'Família Costa',   dest:'Gramado',      gmv:8500, rent:9.0, agent:'Dennis',   canal:'WhatsApp', stage:'cotacao',     temp:'warm',obs:'4 pessoas, férias julho.',     created:Date.now()-86400000},
+    {id:3, nome:'Ana Rodrigues',   dest:'Portugal',     gmv:22000,rent:10.0,agent:'Yasmin',   canal:'Indicação',stage:'levantamento',temp:'hot', obs:'Quer viajar em outubro.',      created:Date.now()-43200000},
+    {id:4, nome:'Carlos Mendes',   dest:'Maceió',       gmv:5800, rent:9.0, agent:'Viviane',  canal:'Walk-in',  stage:'contato',     temp:'cold',obs:'Pesquisando, sem data.',        created:Date.now()-21600000},
+    {id:5, nome:'Lucia Ferreira',  dest:'Disney',       gmv:35000,rent:12.0,agent:'Yasmin',   canal:'Indicação',stage:'cotacao',     temp:'hot', obs:'2 crianças, pacote completo.', created:Date.now()-108000000},
+    {id:6, nome:'Pedro Souza',     dest:'Bahia',        gmv:4200, rent:9.0, agent:'Dennis',   canal:'Walk-in',  stage:'fechado',     temp:'hot', obs:'',                             created:Date.now()-259200000,rent_real:9.0},
+    {id:7, nome:'Marcos Lima',     dest:'Noronha',      gmv:18000,rent:8.0, agent:'Viviane',  canal:'WhatsApp', stage:'negociacao',  temp:'warm',obs:'Achou caro. Pediu desconto.',  created:Date.now()-172800000},
+    {id:8, nome:'Tereza Nunes',    dest:'Fortaleza',    gmv:6100, rent:9.0, agent:'Ana Luiza',canal:'Walk-in',  stage:'contato',     temp:'cold',obs:'',                             created:Date.now()-32400000},
+    {id:9, nome:'José Almeida',    dest:'Itália',       gmv:28000,rent:11.0,agent:'Yasmin',   canal:'Indicação',stage:'fechado',     temp:'hot', obs:'',                             created:Date.now()-345600000,rent_real:11.0},
+    {id:10,nome:'Sandra Oliveira', dest:'Natal',        gmv:7500, rent:9.5, agent:'Dennis',   canal:'Walk-in',  stage:'levantamento',temp:'warm',obs:'Perguntou sobre seguro.',      created:Date.now()-54000000},
+    {id:11,nome:'Rafael Campos',   dest:'Argentina',    gmv:9800, rent:9.0, agent:'Ana Luiza',canal:'WhatsApp', stage:'cotacao',     temp:'warm',obs:'Férias de julho.',             created:Date.now()-129600000},
+    {id:12,nome:'Bruna Teixeira',  dest:'Recife',       gmv:5500, rent:8.5, agent:'Viviane',  canal:'Walk-in',  stage:'fechado',     temp:'hot', obs:'',                             created:Date.now()-432000000,rent_real:8.5},
+    {id:13,nome:'Flávia Gomes',    dest:'Maldivas',     gmv:42000,rent:11.0,agent:'Yasmin',   canal:'Indicação',stage:'negociacao',  temp:'hot', obs:'2 casais. Pesquisou muito.',   created:Date.now()-259200000},
+    {id:14,nome:'Eduardo Lima',    dest:'Buenos Aires', gmv:8200, rent:9.0, agent:'Dennis',   canal:'WhatsApp', stage:'contato',     temp:'warm',obs:'Primeiro contato.',            created:Date.now()-10800000},
+  ];
+}
+
+// ===== UTILS =====
+const fmt = v => v >= 1000 ? 'R$'+(v/1000).toFixed(0)+'k' : 'R$'+v;
+const fmtF = v => 'R$ '+Math.round(v).toLocaleString('pt-BR');
+const dA = ts => Math.floor((Date.now()-ts)/86400000);
+
+// leads visíveis conforme role
+function visibleLeads() {
+  const all = getLeads();
+  if (!CUR) return all;
+  if (CUR.role === 'vendedor') return all.filter(l => l.agent === CUR.name);
+  return all; // admin e supervisora veem tudo
+}
+
+// ===== COMISSÃO ENGINE =====
+const metaRec = meta => meta * (META_REC_PCT / 100);
+
+function calcNivel(rec, meta) {
+  const mr = metaRec(meta);
+  const pct = mr > 0 ? Math.round(rec / mr * 100) : 0;
+  let n = NIVEIS[0];
+  for (const x of [...NIVEIS].reverse()) { if (pct >= x.min) { n = x; break; } }
+  return { nivel: n, pctRec: pct, bateu: pct >= 100 };
+}
+
+function getComData(agentName) {
+  const meta = getMeta(agentName) || METAS_BASE.loja;
+  const mr = metaRec(meta);
+  const all = getLeads();
+  const ls2 = agentName === '__loja__' ? all : all.filter(l => l.agent === agentName);
+  const fechados = ls2.filter(l => l.stage === 'fechado');
+  const pipeline = ls2.filter(l => !['fechado','perdido'].includes(l.stage));
+  const recConf = fechados.reduce((a,l) => a + l.gmv * ((l.rent_real || l.rent) / 100), 0);
+  const recEst  = pipeline.reduce((a,l) => a + l.gmv * (l.rent / 100), 0);
+  const comConf = calcNivel(recConf, meta);
+  const comPot  = calcNivel(recConf + recEst, meta);
+  const bolsoConf = recConf * (comConf.nivel.pct / 100);
+  const bolsoPot  = (recConf + recEst) * (comPot.nivel.pct / 100);
+  const prox = NIVEIS[comConf.nivel.id + 1] || null;
+  let faltaRec = 0, faltaGmv = 0, ganhoRetro = 0;
+  if (prox) {
+    const recParaProx = mr * (prox.min / 100);
+    faltaRec = Math.max(recParaProx - recConf, 0);
+    faltaGmv = faltaRec / 0.09;
+    ganhoRetro = recConf * (prox.pct / 100) - bolsoConf;
+  }
+  const pctConf = mr > 0 ? Math.min(recConf / mr * 100, 100) : 0;
+  const pctEst  = mr > 0 ? Math.min((recConf + recEst) / mr * 100, 100) : 0;
+  return { meta, mr, recConf, recEst, bolsoConf, bolsoPot, comConf: comConf.nivel, comPot: comPot.nivel, prox, faltaRec, faltaGmv, ganhoRetro, pctConf, pctEst };
+}
+
+// ===== LOGIN =====
+function buildLoginSel() {
+  const sel = document.getElementById('l-sel');
+  sel.innerHTML = '<option value="">— Escolha —</option>';
+  getUsuarios().filter(u => u.role !== 'admin').forEach(u => {
+    const o = document.createElement('option');
+    o.value = u.id; o.textContent = u.name; sel.appendChild(o);
+  });
+}
+
+// triplo clique no logo → admin
+let lClicks = 0, lTimer = null;
+document.querySelector('.login-logo-badge').addEventListener('click', () => {
+  lClicks++; clearTimeout(lTimer);
+  lTimer = setTimeout(() => {
+    if (lClicks >= 3) {
+      const p = prompt('Senha do administrador:');
+      const admin = getUsuarios().find(u => u.id === 'rafael');
+      if (p && admin && p === admin.senha) { CUR = admin; entrar(); }
+      else if (p) alert('Senha incorreta.');
+    }
+    lClicks = 0;
+  }, 600);
+});
+
+function doLogin() {
+  const id = document.getElementById('l-sel').value;
+  const pass = document.getElementById('l-pass').value;
+  const err = document.getElementById('l-err');
+  if (!id) { err.textContent = 'Selecione seu nome!'; return; }
+  if (!pass) { err.textContent = 'Informe sua senha!'; return; }
+  const u = getUsuarios().find(x => x.id === id);
+  if (!u || u.senha !== pass) { err.textContent = 'Senha incorreta!'; return; }
+  CUR = u; err.textContent = ''; document.getElementById('l-pass').value = '';
+  entrar();
+}
+
+function entrar() {
+  document.getElementById('sc-login').classList.remove('on');
+  document.getElementById('sc-app').classList.add('on');
+  document.getElementById('fab-btn').style.display = 'flex';
+  document.getElementById('top-nome').textContent = CUR.name;
+  document.getElementById('top-sub').textContent = CUR.role === 'admin' ? 'Administrador — visão completa' : CUR.role === 'supervisora' ? 'Supervisora — visão da equipe' : 'Consultor de Vendas';
+  const rb = document.getElementById('top-role-badge');
+  rb.textContent = CUR.role === 'admin' ? 'Admin' : CUR.role === 'supervisora' ? 'Supervisora' : 'Vendedor';
+  rb.className = 'role-badge ' + (CUR.role === 'admin' ? 'role-a' : CUR.role === 'supervisora' ? 'role-s' : 'role-v');
+  buildTabs();
+  populateAgentSelect();
+  showAba('funil');
+  initMaya();
+  // Detecta primeiro acesso (senha ainda é a padrão cvc123)
+  if (CUR.senha === 'cvc123' && CUR.role !== 'admin') {
+    setTimeout(() => abrirPrimeiroAcesso(), 600);
+  }
+}
+
+function doLogout() {
+  CUR = null;
+  document.getElementById('sc-app').classList.remove('on');
+  document.getElementById('sc-login').classList.add('on');
+  document.getElementById('fab-btn').style.display = 'none';
+  document.getElementById('l-pass').value = '';
+  document.getElementById('l-err').textContent = '';
+  buildLoginSel();
+}
+
+// ===== ABAS =====
+function buildTabs() {
+  const tabs = document.getElementById('tabs');
+  const defs = [
+    {id:'funil', label:'🔀 Funil'},
+  ];
+  if (CUR.role === 'supervisora' || CUR.role === 'admin') {
+    defs.push({id:'visao', label:'📊 Visão Geral'});
+  }
+  tabs.innerHTML = defs.map(t =>
+    `<button class="tab ${t.id === 'funil' ? 'on' : ''}" onclick="showAba('${t.id}',this)">${t.label}</button>`
+  ).join('');
+}
+
+function showAba(id, btn) {
+  abaAtual = id;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  else { const t = document.querySelector(`.tab`); if(t) t.classList.add('on'); }
+  document.getElementById('tab-funil').style.display = id === 'funil' ? 'flex' : 'none';
+  document.getElementById('tab-visao').style.display = id === 'visao' ? 'flex' : 'none';
+  document.getElementById('fab-btn').style.display = id === 'funil' ? 'flex' : 'none';
+  if (id === 'funil') render();
+  if (id === 'visao') renderVisaoGeral();
+}
+
+// ===== POPULATE SELECTS =====
+function populateAgentSelect() {
+  const sel = document.getElementById('f-agent');
+  const vendedores = getUsuarios().filter(u => u.role !== 'admin');
+  sel.innerHTML = vendedores.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+  if (CUR.role === 'vendedor') {
+    sel.value = CUR.name;
+  }
+}
+
+// ===== SIDEBAR =====
+function toggleSB() {
+  sbOpen = !sbOpen;
+  document.getElementById('sidebar').classList.toggle('closed', !sbOpen);
+}
+
+// ===== KPIs =====
+function renderKPIs() {
+  const agentKey = CUR.role === 'vendedor' ? CUR.name : '__loja__';
+  const cd = getComData(agentKey);
+  const ls2 = visibleLeads();
+  const ativos = ls2.filter(l => !['fechado','perdido'].includes(l.stage));
+  const fechados = ls2.filter(l => l.stage === 'fechado');
+  const conv = ls2.length > 0 ? (fechados.length / ls2.length * 100).toFixed(0) : 0;
+  const pipe = ativos.reduce((a,l) => a+l.gmv, 0);
+  document.getElementById('kpi-grid').innerHTML = [
+    {l:'Pipeline GMV',v:fmt(pipe),       s:ativos.length+' leads'},
+    {l:'Conversão',   v:conv+'%',         s:fechados.length+' fechados'},
+    {l:'Rec. Conf.',  v:fmt(cd.recConf), s:cd.comConf.label},
+    {l:'Rec. Est.',   v:'~'+fmt(cd.recEst),s:'pipeline'},
+  ].map(k => `<div class="kpi"><div class="kpi-l">${k.l}</div><div class="kpi-v">${k.v}</div><div class="kpi-s">${k.s}</div></div>`).join('');
+}
+
+// ===== COMISSÃO SIDEBAR =====
+function renderComissao() {
+  const agentKey = CUR.role === 'vendedor' ? CUR.name : '__loja__';
+  const cd = getComData(agentKey);
+  const nc = cd.comConf, np = cd.comPot;
+  document.getElementById('com-conf').innerHTML = `
+    <div class="com-row"><span class="com-lbl">✅ Receita confirmada</span><span class="com-val" style="color:var(--verde)">${fmtF(cd.recConf)}</span></div>
+    <div class="com-row"><span class="com-lbl">Comissão no bolso</span><span class="com-val" style="color:var(--verde)">${fmtF(cd.bolsoConf)}</span></div>
+    <span class="com-tag" style="background:${NIVEL_BG[nc.id]};color:${NIVEL_COR[nc.id]}">${nc.label} — ${nc.pct}%</span>
+    <div class="barra-lbl" style="margin-top:6px"><span>Meta receita (${META_REC_PCT}%)</span><span>${cd.pctConf.toFixed(0)}%</span></div>
+    <div class="barra-bg"><div class="barra-fill" style="width:${cd.pctConf}%;background:var(--verde)"></div></div>`;
+  document.getElementById('com-est').innerHTML = `
+    <div class="com-row"><span class="com-lbl">~ Receita estimada <span class="com-est-badge">pipeline</span></span><span class="com-val" style="color:var(--amar2)">${fmtF(cd.recEst)}</span></div>
+    <div class="com-row"><span class="com-lbl">Comissão potencial ~</span><span class="com-val" style="color:var(--amar2)">${fmtF(cd.bolsoPot)}</span></div>
+    <span class="com-tag" style="background:${NIVEL_BG[np.id]};color:${NIVEL_COR[np.id]}">${np.label} — ${np.pct}% <span style="opacity:.6;font-weight:400">est.</span></span>
+    <div class="barra-lbl" style="margin-top:6px"><span>Com pipeline estimado</span><span>${cd.pctEst.toFixed(0)}%</span></div>
+    <div class="barra-bg"><div class="barra-fill" style="width:${cd.pctEst}%;background:linear-gradient(90deg,var(--azul),var(--amar))"></div></div>`;
+  if (cd.prox) {
+    document.getElementById('com-subir').innerHTML = `
+      <div class="com-subir-title">🎯 Para atingir ${cd.prox.label} (${cd.prox.pct}%)</div>
+      <div class="com-subir-row"><span class="com-lbl">Falta receita real</span><span class="com-subir-val">${fmtF(cd.faltaRec)}</span></div>
+      <div class="com-subir-row"><span class="com-lbl">≈ Vender a mais (9%)</span><span class="com-subir-val">${fmt(cd.faltaGmv)}</span></div>
+      ${cd.ganhoRetro > 0 ? `<div class="com-retro">🚀 Ganho retroativo se atingir: +${fmtF(cd.ganhoRetro)}</div>` : ''}`;
+  } else {
+    document.getElementById('com-subir').innerHTML = `<div style="font-size:10px;color:var(--verde);text-align:center">🏆 Nível máximo!</div>`;
+  }
+}
+
+// ===== RANKING =====
+function renderRanking() {
+  const blk = document.getElementById('ranking-block');
+  const agentes = getUsuarios().filter(u => u.role !== 'admin');
+  const all = getLeads();
+  const ranked = agentes.map(u => ({
+    name: u.name,
+    gmv: all.filter(l => l.agent === u.name && l.stage === 'fechado').reduce((s,l) => s+l.gmv, 0)
+  })).sort((a,b) => b.gmv - a.gmv);
+  const medals = ['🥇','🥈','🥉','4º','5º'];
+  blk.innerHTML = `<div class="sb-title">🏆 Ranking GMV</div>` + ranked.map((r,i) => `
+    <div class="rank-row">
+      <span class="rank-medal">${medals[i]}</span>
+      <div class="rank-av" style="background:${CORES[r.name]||'#555'};color:${CORES_T[r.name]||'#fff'}">${r.name[0]}</div>
+      <span class="rank-name">${r.name}${CUR && r.name === CUR.name ? ' <span class="rank-me">você</span>' : ''}</span>
+      <span class="rank-gmv">${fmt(r.gmv)}</span>
+    </div>`).join('');
+}
+
+// ===== ALERTAS =====
+function renderAlerts() {
+  const ls2 = visibleLeads();
+  const urg = ls2.filter(l => l.stage === 'negociacao' && dA(l.created) >= 2);
+  const hot = ls2.filter(l => l.temp === 'hot' && ['cotacao','negociacao'].includes(l.stage));
+  const agentKey = CUR.role === 'vendedor' ? CUR.name : '__loja__';
+  const cd = getComData(agentKey);
+  const pills = [];
+  urg.forEach(l => pills.push({c:'urg', t:`⚠️ Urgente: ${l.nome} (${dA(l.created)}d parado)`}));
+  hot.slice(0,2).forEach(l => pills.push({c:'hot', t:`🔥 ${l.nome} — ${fmt(l.gmv)} quente`}));
+  if (cd.prox && cd.faltaRec > 0) pills.push({c:'info', t:`🎯 Faltam ${fmtF(cd.faltaRec)} p/ ${cd.prox.label}`});
+  if (cd.comConf.id > 0) pills.push({c:'ok', t:`✅ ${cd.comConf.label} atingido!`});
+  document.getElementById('alerts').innerHTML = pills.map(p => `<div class="ap ${p.c}">${p.t}</div>`).join('');
+}
+
+// ===== KANBAN =====
+function getTip(l) {
+  const d = dA(l.created);
+  if (l.stage === 'negociacao' && d >= 2) return `Parado ${d}d — clique para script de reativação`;
+  if (l.temp === 'hot' && l.stage === 'cotacao') return `Lead quente! Clique para script de fechamento`;
+  if (l.temp === 'cold') return `Lead frio — clique para dicas de reaquecimento`;
+  if (l.gmv >= 20000) return `Alto valor — clique para estratégia premium`;
+  return `Clique para análise completa da Maya IA`;
+}
+
+function buildCard(l, st, next) {
+  const d = dA(l.created);
+  const urg = d >= 2 && st.id === 'negociacao';
+  const isFechado = st.id === 'fechado';
+  const rentUse = isFechado ? (l.rent_real || l.rent) : l.rent;
+  const recLead = l.gmv * (rentUse / 100);
+  const agentKey = CUR.role === 'vendedor' ? CUR.name : '__loja__';
+  const comPct = getComData(agentKey).comConf.pct;
+  const comLead = recLead * (comPct / 100);
+  const showAgent = CUR.role !== 'vendedor';
+
+  const reguaBlock = isFechado ? `
+    <div class="lc-real">
+      <div class="lc-real-hdr"><span class="lc-real-lbl">✅ Receita real</span><span class="lc-real-lock">🔒</span></div>
+      <div class="lc-real-row">
+        <div class="lc-real-item"><div class="lc-real-item-l">Rentab.</div><div class="lc-real-item-v" style="color:var(--verde)">${rentUse}%</div></div>
+        <div class="lc-real-item"><div class="lc-real-item-l">Receita</div><div class="lc-real-item-v" style="color:var(--verde)">${fmtF(recLead)}</div></div>
+        <div class="lc-real-item"><div class="lc-real-item-l">Comissão</div><div class="lc-real-item-v" style="color:var(--verde)">${fmtF(comLead)}</div></div>
+      </div>
+    </div>` : `
+    <div class="lc-regua">
+      <div class="lc-regua-hdr"><span class="lc-regua-lbl">~ Régua</span><span class="lc-regua-pct" id="rp-${l.id}">${l.rent}%</span></div>
+      <input type="range" class="regua-slider" id="rs-${l.id}" min="8" max="14" value="${l.rent}" step="0.5" oninput="updateRent(${l.id},this.value)">
+      <div class="lc-regua-nums"><span>8%</span><span>11%</span><span>14%</span></div>
+      <div class="lc-est-row">
+        <div><div class="lc-est-lbl">Receita est.</div><div class="lc-est-val" id="re-${l.id}">${fmtF(recLead)} ~</div></div>
+        <div style="text-align:right"><div class="lc-est-lbl">Comissão est.</div><div class="lc-est-com" id="ce-${l.id}">${fmtF(comLead)} ~</div></div>
+      </div>
+    </div>`;
+
+  return `<div class="lcard${urg?' urgente':''}${isFechado?' fechado':''}" style="--lc:${TEMP_COR[l.temp]}">
+    <div class="lc-top"><div class="lc-nome">${l.nome}</div><div class="lc-ico">${TEMP[l.temp]}</div></div>
+    <div class="lc-dest">📍 ${l.dest} · ${l.canal}</div>
+    <div class="lc-mid">
+      <span class="lc-gmv">${fmtF(l.gmv)}</span>
+      ${showAgent ? `<span class="lc-agent">${l.agent}</span>` : ''}
+      <span class="lc-age ${d>=2&&!isFechado?'w':''}">${d===0?'hoje':d+'d'}</span>
+    </div>
+    ${reguaBlock}
+    <div class="lc-tip" onclick="openMayaLead(${l.id})">🤖 ${getTip(l)}</div>
+    <div class="lc-actions">
+      ${next?`<button class="btn-mv" onclick="moveL(${l.id},'${next}')">→ ${STAGES.find(s=>s.id===next)?.label}</button>`:''}
+      ${!isFechado?`<button class="btn-lose" onclick="moveL(${l.id},'perdido')" title="Perdido">✕</button>`:''}
+    </div>
+  </div>`;
+}
+
+function renderKanban() {
+  const ls2 = visibleLeads();
+  const kanban = document.getElementById('kanban');
+  kanban.innerHTML = '';
+  STAGES.forEach(st => {
+    const items = ls2.filter(l => l.stage === st.id).sort((a,b) => {
+      if (a.temp==='hot'&&b.temp!=='hot') return -1;
+      if (b.temp==='hot'&&a.temp!=='hot') return 1;
+      return dA(b.created)-dA(a.created);
+    });
+    const next = NEXT[st.id];
+    const col = document.createElement('div');
+    col.className = 'kcol';
+    col.innerHTML = `
+      <div class="kcol-hd" style="background:${st.bg};color:${st.cor}">
+        <span class="kcol-name">${st.label}</span>
+        <span class="kcol-cnt">${items.length}</span>
+      </div>
+      <div class="kcol-bd">
+        ${items.length===0?'<div class="kcol-empty">Sem leads</div>':''}
+        ${items.map(l => buildCard(l, st, next)).join('')}
+        ${items.length>0?`<div class="kcol-tot">${fmtF(items.reduce((s,l)=>s+l.gmv,0))}</div>`:''}
+      </div>`;
+    kanban.appendChild(col);
+  });
+}
+
+function updateRent(id, val) {
+  val = parseFloat(val);
+  const all = getLeads();
+  const l = all.find(x => x.id === id);
+  if (!l) return;
+  l.rent = val;
+  saveLeads(all);
+  const recLead = l.gmv * (val / 100);
+  const agentKey = CUR.role === 'vendedor' ? CUR.name : '__loja__';
+  const comPct = getComData(agentKey).comConf.pct;
+  const comLead = recLead * (comPct / 100);
+  const rp = document.getElementById(`rp-${id}`);
+  const re = document.getElementById(`re-${id}`);
+  const ce = document.getElementById(`ce-${id}`);
+  if (rp) rp.textContent = val + '%';
+  if (re) re.textContent = fmtF(recLead) + ' ~';
+  if (ce) ce.textContent = fmtF(comLead) + ' ~';
+  renderKPIs(); renderComissao(); renderAlerts();
+}
+
+function moveL(id, stage) {
+  const all = getLeads();
+  const l = all.find(x => x.id === id);
+  if (!l) return;
+  if (stage === 'fechado') l.rent_real = l.rent;
+  l.stage = stage;
+  saveLeads(all);
+  render();
+}
+
+// ===== VISÃO GERAL (supervisora/admin) =====
+function renderVisaoGeral() {
+  const all = getLeads();
+  const agentes = getUsuarios().filter(u => u.role !== 'admin');
+  const tGmv = all.filter(l=>l.stage==='fechado').reduce((s,l)=>s+l.gmv,0);
+  const tPipe = all.filter(l=>!['fechado','perdido'].includes(l.stage)).reduce((s,l)=>s+l.gmv,0);
+  const tMeta = agentes.reduce((s,u)=>s+getMeta(u.name),0);
+  const tRec = all.filter(l=>l.stage==='fechado').reduce((s,l)=>s+l.gmv*((l.rent_real||l.rent)/100),0);
+
+  const vg = document.getElementById('tab-visao');
+  vg.innerHTML = `
+    <div class="vg-stats">
+      <div class="vg-stat"><div class="vg-stat-l">GMV Fechado</div><div class="vg-stat-v">${fmt(tGmv)}</div><div class="vg-stat-s">loja total</div></div>
+      <div class="vg-stat"><div class="vg-stat-l">Pipeline</div><div class="vg-stat-v">${fmt(tPipe)}</div><div class="vg-stat-s">em aberto</div></div>
+      <div class="vg-stat"><div class="vg-stat-l">Meta Coletiva</div><div class="vg-stat-v">${fmt(tMeta)}</div><div class="vg-stat-s">abril 2026</div></div>
+      <div class="vg-stat"><div class="vg-stat-l">Receita Conf.</div><div class="vg-stat-v">${fmt(tRec)}</div><div class="vg-stat-s">real confirmada</div></div>
+    </div>
+    ${agentes.map(u => {
+      const cd = getComData(u.name);
+      const pct = Math.min(cd.pctConf, 100);
+      const agFechados = all.filter(l=>l.agent===u.name&&l.stage==='fechado');
+      const agPipe = all.filter(l=>l.agent===u.name&&!['fechado','perdido'].includes(l.stage));
+      return `<div class="ag-card">
+        <div class="ag-header">
+          <div class="ag-av" style="background:${CORES[u.name]||'#555'};color:${CORES_T[u.name]||'#fff'}">${u.name[0]}</div>
+          <div><div class="ag-name">${u.name}</div><div class="ag-role">${u.role} · Meta: ${fmt(cd.meta)}</div></div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-family:var(--mono);font-size:18px;font-weight:800;color:var(--amar)">${pct.toFixed(0)}%</div>
+            <div style="font-size:9px;color:var(--muted)">meta receita</div>
+          </div>
+        </div>
+        <div class="ag-barra-bg"><div class="ag-barra-fill" style="width:${pct}%"></div></div>
+        <div class="ag-nums">
+          <div class="ag-num"><div class="ag-num-l">GMV Fech.</div><div class="ag-num-v" style="color:var(--amar)">${fmt(agFechados.reduce((s,l)=>s+l.gmv,0))}</div></div>
+          <div class="ag-num"><div class="ag-num-l">Rec. Conf.</div><div class="ag-num-v" style="color:var(--verde)">${fmt(cd.recConf)}</div></div>
+          <div class="ag-num"><div class="ag-num-l">Comissão</div><div class="ag-num-v" style="color:var(--verde)">${fmt(cd.bolsoConf)}</div></div>
+          <div class="ag-num"><div class="ag-num-l">Pipeline</div><div class="ag-num-v" style="color:var(--roxo)">${agPipe.length} leads</div></div>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ===== MODAL NOVO LEAD =====
+function openModal() { document.getElementById('ov-lead').classList.add('open'); }
+function closeModal() { document.getElementById('ov-lead').classList.remove('open'); }
+function addLead() {
+  const nome = document.getElementById('f-nome').value.trim();
+  if (!nome) { alert('Informe o nome.'); return; }
+  const all = getLeads();
+  all.push({
+    id: Date.now(), nome,
+    dest: document.getElementById('f-dest').value || 'A definir',
+    gmv: parseFloat(document.getElementById('f-gmv').value) || 0,
+    rent: parseFloat(document.getElementById('f-rent').value) || 9,
+    agent: document.getElementById('f-agent').value,
+    canal: document.getElementById('f-canal').value,
+    stage: 'contato', temp: document.getElementById('f-temp').value,
+    obs: document.getElementById('f-obs').value || '',
+    created: Date.now(),
+  });
+  saveLeads(all); closeModal(); render();
+  ['f-nome','f-dest','f-gmv','f-obs'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('f-rent').value = 9;
+  document.getElementById('f-rent-val').textContent = '9%';
+}
+
+// ===== SENHA =====
+function openSenha() {
+  ['s-atual','s-nova','s-conf'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('s-err').textContent = '';
+  document.getElementById('ov-senha').classList.add('open');
+}
+function trocarSenha() {
+  const a = document.getElementById('s-atual').value;
+  const n = document.getElementById('s-nova').value;
+  const c = document.getElementById('s-conf').value;
+  const err = document.getElementById('s-err');
+  const us = getUsuarios();
+  const u = us.find(x => x.id === CUR.id);
+  if (u.senha !== a) { err.textContent = 'Senha atual incorreta!'; return; }
+  if (n.length < 4) { err.textContent = 'Mínimo 4 caracteres.'; return; }
+  if (n !== c) { err.textContent = 'Senhas não coincidem!'; return; }
+  u.senha = n; setUsuarios(us); CUR = u;
+  document.getElementById('ov-senha').classList.remove('open');
+  alert('Senha alterada com sucesso! ✓');
+}
+
+// ===== PRIMEIRO ACESSO =====
+function abrirPrimeiroAcesso() {
+  document.getElementById('pa-nome').textContent = CUR.name;
+  document.getElementById('pa-nova').value = '';
+  document.getElementById('pa-conf').value = '';
+  document.getElementById('pa-err').textContent = '';
+  document.getElementById('pa-strength').style.background = 'var(--brd)';
+  document.getElementById('pa-strength').style.width = '0%';
+  document.getElementById('pa-strength-lbl').textContent = '';
+  document.getElementById('ov-primeiro-acesso').classList.add('open');
+  setTimeout(() => document.getElementById('pa-nova').focus(), 100);
+}
+
+function checkSenhaForce(val) {
+  const bar = document.getElementById('pa-strength');
+  const lbl = document.getElementById('pa-strength-lbl');
+  const btn = document.getElementById('btn-pa');
+  let score = 0;
+  if (val.length >= 6) score++;
+  if (val.length >= 8) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[^a-zA-Z0-9]/.test(val)) score++;
+  const levels = [
+    {pct:'20%', cor:'var(--verm)',  txt:'Muito fraca'},
+    {pct:'40%', cor:'var(--lara)',  txt:'Fraca'},
+    {pct:'60%', cor:'var(--amar2)', txt:'Média'},
+    {pct:'80%', cor:'var(--amar)',  txt:'Boa'},
+    {pct:'100%',cor:'var(--verde)', txt:'Forte ✓'},
+  ];
+  const lvl = val.length === 0 ? null : levels[Math.min(score - 1, 4)];
+  bar.style.width   = lvl ? lvl.pct : '0%';
+  bar.style.background = lvl ? lvl.cor : 'var(--brd)';
+  lbl.textContent   = lvl ? lvl.txt : '';
+  lbl.style.color   = lvl ? lvl.cor : 'var(--muted)';
+  btn.disabled      = val.length < 6;
+}
+
+function salvarPrimeiraSenha() {
+  const nova = document.getElementById('pa-nova').value;
+  const conf = document.getElementById('pa-conf').value;
+  const err  = document.getElementById('pa-err');
+  if (nova.length < 6) { err.textContent = 'Mínimo 6 caracteres.'; return; }
+  if (nova === 'cvc123') { err.textContent = 'Escolha uma senha diferente da padrão!'; return; }
+  if (nova !== conf) { err.textContent = 'As senhas não coincidem!'; return; }
+  const us = getUsuarios();
+  const u  = us.find(x => x.id === CUR.id);
+  u.senha  = nova;
+  setUsuarios(us);
+  CUR = u;
+  document.getElementById('ov-primeiro-acesso').classList.remove('open');
+  // Feedback visual leve
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--verde);color:var(--azul3);font-weight:700;font-size:13px;padding:10px 22px;border-radius:22px;z-index:999;animation:fadeUp .3s ease;box-shadow:0 4px 16px rgba(0,212,138,.3)';
+  toast.textContent = '✓ Senha criada com sucesso!';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+function openMayaLead(id) {
+  const all = getLeads();
+  activeLead = all.find(l => l.id === id);
+  if (!activeLead) return;
+  const l = activeLead, d = dA(l.created);
+  const isFechado = l.stage === 'fechado';
+  const rentUse = isFechado ? (l.rent_real || l.rent) : l.rent;
+  const recLead = l.gmv * (rentUse / 100);
+  document.getElementById('lead-ctx').innerHTML = `
+    <strong>${l.nome}</strong> · ${l.dest} · GMV: ${fmtF(l.gmv)}<br>
+    Etapa: <strong>${STAGES.find(s=>s.id===l.stage)?.label}</strong> · ${TEMP[l.temp]} · ${d===0?'Hoje':d+'d no funil'}<br>
+    <span class="${isFechado?'':'ctx-est'}">${isFechado?`✅ Receita real: ${fmtF(recLead)} (${rentUse}%) — confirmado`:`~ Receita est: ${fmtF(recLead)} (régua ${rentUse}%)`}</span>
+    ${l.obs?`<br>Obs: <em>${l.obs}</em>`:''}`;
+  document.getElementById('maya-pmgs').innerHTML = '';
+  document.getElementById('maya-ov').classList.add('open');
+  const prompt = `Analise este lead e dê estratégia objetiva:
+Cliente: ${l.nome} | Destino: ${l.dest} | GMV: ${fmtF(l.gmv)}
+Etapa: ${STAGES.find(s=>s.id===l.stage)?.label} | Temperatura: ${l.temp==='hot'?'Quente':l.temp==='warm'?'Morno':'Frio'}
+Dias no funil: ${d===0?'Hoje':d+' dias'}
+Rentabilidade ${isFechado?'real':'estimada'}: ${rentUse}%
+${l.obs?'Observações: '+l.obs:''}
+${d>=2&&l.stage==='negociacao'?`⚠️ Lead parado em negociação há ${d} dias!`:''}
+Consultor responsável: ${l.agent}
+
+Responda: 1) Análise rápida, 2) Estratégia de abordagem, 3) Como quebrar objeções, 4) Próximo passo concreto.`;
+  callMaya(prompt, 'maya-pmgs', 'mps-btn');
+}
+function closeMayaModal() { document.getElementById('maya-ov').classList.remove('open'); activeLead = null; }
+function sendMayaPanel() {
+  const inp = document.getElementById('mpi');
+  const msg = inp.value.trim(); if (!msg) return;
+  addMsg(msg, 'user', 'maya-pmgs');
+  inp.value = '';
+  const ctx = activeLead ? `[Lead: ${activeLead.nome}, ${activeLead.dest}, ${fmtF(activeLead.gmv)}, Etapa: ${STAGES.find(s=>s.id===activeLead.stage)?.label}, Régua: ${activeLead.rent}%]\n` : '';
+  callMaya(ctx + msg, 'maya-pmgs', 'mps-btn');
+}
+
+// ===== MAYA SIDEBAR =====
+const CHIPS = ['Como está minha comissão?','Qual lead priorizar agora?','Script para quebrar objeção de preço','Lead parado — o que fazer?','Como aumentar a rentabilidade?'];
+
+function initMaya() {
+  document.getElementById('chips').innerHTML = CHIPS.map(c =>
+    `<div class="chip" onclick="sendChip('${c}')">${c}</div>`).join('');
+  addMsg(`Olá, **${CUR.name}**! Sou a **Maya**, sua especialista de vendas CVC com IA. Analiso seu pipeline e comissões em tempo real. Clique em qualquer lead para análise detalhada! 🚀`, 'ai', 'maya-msgs');
+}
+
+function sendChip(txt) { document.getElementById('maya-inp').value = txt; sendMaya(); }
+
+function sendMaya() {
+  const inp = document.getElementById('maya-inp');
+  const msg = inp.value.trim(); if (!msg) return;
+  addMsg(msg, 'user', 'maya-msgs');
+  inp.value = '';
+  const agentKey = CUR.role === 'vendedor' ? CUR.name : '__loja__';
+  const cd = getComData(agentKey);
+  const ls2 = visibleLeads();
+  const urg = ls2.filter(l => l.stage==='negociacao'&&dA(l.created)>=2);
+  const ctx = `[Usuário: ${CUR.name} (${CUR.role}) | Comissão confirmada: ${fmtF(cd.bolsoConf)} (${cd.comConf.label}) | Receita conf: ${fmtF(cd.recConf)} | Receita est: ${fmtF(cd.recEst)} | Leads urgentes: ${urg.length} | Falta p/ próximo nível: ${fmtF(cd.faltaRec)}]`;
+  callMaya(ctx + '\n' + msg, 'maya-msgs', 'msend');
+}
+
+function addMsg(txt, type, cid) {
+  const d = document.getElementById(cid);
+  const m = document.createElement('div');
+  m.className = 'mmsg ' + type;
+  m.innerHTML = txt.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  d.appendChild(m); d.scrollTop = d.scrollHeight;
+  return m;
+}
+
+// ===== ANTHROPIC API =====
+async function callMaya(userMsg, cid, btnId) {
+  const btn = document.getElementById(btnId);
+  if (btn) btn.disabled = true;
+  const loading = addMsg('Maya analisando...', 'load', cid);
+  const SYSTEM = `Você é a Maya, especialista sênior em vendas de turismo da CVC Viagens, coach de vendas para consultores da loja CVC Shopping Sete Lagoas (R&R Turismo Ltda).
+
+EXPERTISE:
+- Vendas consultivas de turismo, pacotes nacionais e internacionais CVC
+- Quebra de objeções: preço alto, "vou pensar", "achei mais barato online", medo de viajar
+- Follow-up e reativação de leads frios ou parados em negociação
+- Upsell: seguro viagem, passeios, upgrades, cruzeiros
+- Psicologia do cliente brasileiro de classe média que sonha em viajar
+- Rentabilidade de pacotes: régua 8-14%, como trabalhar sem perder a venda
+
+COMISSIONAMENTO CVC SL:
+- Comissão calculada sobre a RECEITA gerada (GMV × rentabilidade%)
+- Meta de receita = 12% da meta bruta do consultor
+- Níveis: <meta=5%, ≥meta=8%, ≥130%=10%, ≥150%=12%, ≥200%=14%
+- Bônus RETROATIVO: subir de nível aumenta o % sobre toda a receita do mês
+
+COMO RESPONDER:
+- Direto e prático — consultores precisam de ações imediatas
+- Para objeções: 2-3 formas de resposta prontas para usar agora
+- Para análise de lead: estrutura clara (análise → estratégia → objeções → próximo passo)
+- Motivador e positivo, sem ser artificial
+- Respostas curtas na sidebar, detalhadas para análise de lead`;
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, system:SYSTEM, messages:[{role:'user',content:userMsg}] })
+    });
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || 'Erro na resposta.';
+    loading.remove();
+    addMsg(text, 'ai', cid);
+  } catch(e) {
+    loading.textContent = 'Erro de conexão.';
+    console.error(e);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+// ===== RENDER PRINCIPAL =====
+function render() {
+  if (abaAtual !== 'funil') return;
+  renderKPIs();
+  renderComissao();
+  renderRanking();
+  renderAlerts();
+  renderKanban();
+}
+
+// ===== INIT =====
+buildLoginSel();
+</script>
+</body>
+</html>
