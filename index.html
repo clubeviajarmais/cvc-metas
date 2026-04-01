@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CVC · Central de Ferramentas</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1A2B6D;--azul2:#0f1d52;--azul3:#0a1338;
+  --amar:#FFD700;--amar2:#FFC000;--amar3:#FFE566;
+  --verde:#00d48a;--roxo:#a78bfa;--lara:#ff9f43;
+  --bg:#0c1230;--card:#111a3e;--card2:#172048;
+  --brd:rgba(255,215,0,.10);--brd2:rgba(255,215,0,.22);
+  --txt:#eef0ff;--muted:#6878b0;
+  --font:'Outfit',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100vh;}
+body{
+  font-family:var(--font);background:var(--bg);color:var(--txt);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:32px 20px;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 5%, rgba(26,43,109,.55) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 40% at 90% 90%, rgba(255,215,0,.06) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 50% at 50% 50%, rgba(10,19,56,.3) 0%,transparent 100%);
+  z-index:0;
+}
+
+/* ===== HERO ===== */
+.hero{text-align:center;margin-bottom:52px;position:relative;z-index:1;animation:fadeUp .6s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+.logo-wrap{display:inline-flex;border-radius:12px;overflow:hidden;margin-bottom:22px;box-shadow:0 8px 32px rgba(255,215,0,.18);}
+.logo-a{background:var(--amar);color:var(--azul2);font-weight:900;font-size:28px;padding:12px 20px;letter-spacing:4px;}
+.logo-b{background:var(--azul3);color:var(--amar);font-weight:700;font-size:12px;padding:12px 16px;border:1px solid var(--amar2);border-left:none;display:flex;align-items:center;letter-spacing:1.5px;}
+
+.hero h1{font-size:clamp(22px,4vw,32px);font-weight:800;margin-bottom:8px;line-height:1.2;}
+.hero h1 em{color:var(--amar);font-style:normal;}
+.hero p{font-size:14px;color:var(--muted);max-width:420px;margin:0 auto;line-height:1.7;}
+
+/* ===== GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+  width:100%;max-width:900px;
+  position:relative;z-index:1;
+  animation:fadeUp .7s ease;
+}
+
+/* ===== CARD ===== */
+.tool-card{
+  background:var(--card);
+  border:1px solid var(--brd);
+  border-radius:16px;
+  padding:24px;
+  text-decoration:none;
+  color:var(--txt);
+  display:flex;flex-direction:column;gap:12px;
+  transition:all .25s;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+}
+.tool-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--card-accent,var(--amar));
+  transition:height .25s;
+}
+.tool-card:hover{
+  border-color:var(--card-accent,var(--amar2));
+  transform:translateY(-4px);
+  box-shadow:0 16px 40px rgba(0,0,0,.35);
+  background:var(--card2);
+}
+.tool-card:hover::before{height:4px;}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.card-icon{
+  width:48px;height:48px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+  background:var(--card-icon-bg,rgba(255,215,0,.12));
+}
+.card-badge{
+  font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;
+  background:var(--card-badge-bg,rgba(255,215,0,.12));
+  color:var(--card-badge-color,var(--amar2));
+  border:1px solid var(--card-badge-border,rgba(255,215,0,.2));
+}
+.card-title{font-size:17px;font-weight:800;margin-bottom:4px;line-height:1.2;}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.6;}
+
+.card-features{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.feat{
+  font-size:10px;font-weight:600;padding:3px 8px;border-radius:8px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  color:var(--muted);
+}
+
+.card-cta{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:auto;padding-top:14px;border-top:1px solid var(--brd);
+}
+.cta-text{font-size:12px;font-weight:700;color:var(--card-accent,var(--amar2));}
+.cta-arrow{
+  width:28px;height:28px;border-radius:8px;
+  background:var(--card-accent,var(--amar2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--azul2);font-weight:900;
+  transition:transform .2s;
+}
+.tool-card:hover .cta-arrow{transform:translateX(3px);}
+
+/* ===== EM BREVE ===== */
+.tool-card.soon{
+  opacity:.55;cursor:default;pointer-events:none;
+}
+.tool-card.soon:hover{transform:none;box-shadow:none;}
+
+/* ===== RODAPÉ ===== */
+.footer{
+  margin-top:48px;text-align:center;
+  position:relative;z-index:1;animation:fadeUp .8s ease;
+}
+.footer-divider{
+  width:60px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--brd2),transparent);
+  margin:0 auto 16px;
+}
+.footer p{font-size:11px;color:var(--muted);line-height:1.7;}
+.footer strong{color:var(--amar2);}
+.footer-mes{
+  display:inline-block;font-family:var(--mono);font-size:10px;
+  background:rgba(255,215,0,.07);border:1px solid var(--brd2);
+  color:var(--amar2);padding:3px 10px;border-radius:20px;margin-top:6px;
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="logo-wrap">
+    <div class="logo-a">CVC</div>
+    <div class="logo-b">VIAGENS</div>
+  </div>
+  <h1>Central de <em>Ferramentas</em></h1>
+  <p>Plataforma interna da equipe CVC Shopping Sete Lagoas — R&R Turismo Ltda.</p>
+</div>
+
+<!-- GRID -->
+<div class="grid">
+
+  <!-- FUNIL DE VENDAS -->
+  <a class="tool-card" href="funil.html" style="--card-accent:var(--amar);--card-icon-bg:rgba(255,215,0,.12);--card-badge-bg:rgba(255,215,0,.12);--card-badge-color:var(--amar2);--card-badge-border:rgba(255,215,0,.2)">
+    <div class="card-top">
+      <div class="card-icon">🔀</div>
+      <span class="card-badge">🟢 Ativo</span>
+    </div>
+    <div>
+      <div class="card-title">Funil de Vendas</div>
+      <div class="card-desc">Pipeline inteligente com régua de rentabilidade por lead, comissão em tempo real e Maya IA integrada para análise e estratégias de fechamento.</div>
+    </div>
+    <div class="card-features">
+      <span class="feat">Kanban</span>
+      <span class="feat">Comissão ao vivo</span>
+      <span class="feat">Régua por lead</span>
+      <span class="feat">Maya IA</span>
+      <span class="feat">Login por agente</span>
+    </div>
+    <div class="card-cta">
+      <span class="cta-text">Acessar funil →</span>
+      <div class="cta-arrow">→</div>
+    </div>
+  </a>
+
+  <!-- CVC METAS -->
+  <a class="tool-card" href="metas.html" style="--card-accent:var(--verde);--card-icon-bg:rgba(0,212,138,.1);--card-badge-bg:rgba(0,212,138,.1);--card-badge-color:var(--verde);--card-badge-border:rgba(0,212,138,.2)">
+    <div class="card-top">
+      <div class="card-icon">📊</div>
+      <span class="card-badge">🟢 Ativo</span>
+    </div>
+    <div>
+      <div class="card-title">Metas & Comissão</div>
+      <div class="card-desc">Acompanhamento individual de metas, simulador de comissão, histórico de vendas e ranking da equipe. Login por consultor com roles diferenciados.</div>
+    </div>
+    <div class="card-features">
+      <span class="feat">Metas mensais</span>
+      <span class="feat">Simulador</span>
+      <span class="feat">Ranking</span>
+      <span class="feat">Admin</span>
+    </div>
+    <div class="card-cta">
+      <span class="cta-text">Acessar metas →</span>
+      <div class="cta-arrow" style="background:var(--verde)">→</div>
+    </div>
+  </a>
+
+  <!-- EM BREVE 1 -->
+  <div class="tool-card soon" style="--card-accent:var(--roxo);--card-icon-bg:rgba(167,139,250,.1);--card-badge-bg:rgba(167,139,250,.1);--card-badge-color:var(--roxo);--card-badge-border:rgba(167,139,250,.2)">
+    <div class="card-top">
+      <div class="card-icon">🤖</div>
+      <span class="card-badge">Em breve</span>
+    </div>
+    <div>
+      <div class="card-title">Maya IA Central</div>
+      <div class="card-desc">Assistente de vendas dedicado com histórico de conversas, treinamento de objeções e análise de desempenho da equipe.</div>
+    </div>
+    <div class="card-features">
+      <span class="feat">Chat IA</span>
+      <span class="feat">Treinamento</span>
+      <span class="feat">Análise</span>
+    </div>
+    <div class="card-cta">
+      <span class="cta-text" style="color:var(--muted)">Em desenvolvimento</span>
+      <div class="cta-arrow" style="background:var(--muted)">→</div>
+    </div>
+  </div>
+
+  <!-- EM BREVE 2 -->
+  <div class="tool-card soon" style="--card-accent:var(--lara);--card-icon-bg:rgba(255,159,67,.1);--card-badge-bg:rgba(255,159,67,.1);--card-badge-color:var(--lara);--card-badge-border:rgba(255,159,67,.2)">
+    <div class="card-top">
+      <div class="card-icon">📋</div>
+      <span class="card-badge">Em breve</span>
+    </div>
+    <div>
+      <div class="card-title">Gerador de Cotações</div>
+      <div class="card-desc">Monte orçamentos profissionais para clientes com cálculo automático de IOF, seguro viagem e margens por produto.</div>
+    </div>
+    <div class="card-features">
+      <span class="feat">PDF automático</span>
+      <span class="feat">IOF + seguro</span>
+      <span class="feat">WhatsApp</span>
+    </div>
+    <div class="card-cta">
+      <span class="cta-text" style="color:var(--muted)">Em desenvolvimento</span>
+      <div class="cta-arrow" style="background:var(--muted)">→</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RODAPÉ -->
+<div class="footer">
+  <div class="footer-divider"></div>
+  <p>
+    <strong>CVC Viagens · Shopping Sete Lagoas</strong><br>
+    R&R Turismo Ltda. · Uso interno exclusivo da equipe
+  </p>
+  <div class="footer-mes">ABRIL 2026</div>
+</div>
+
+</body>
+</html>
